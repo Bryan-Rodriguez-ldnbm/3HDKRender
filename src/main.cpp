@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "utils/Shader.h"
+#include "shader.h"
 #include <stb/stb_image.h>
 
 const unsigned int WIDTH = 800;
@@ -51,6 +51,98 @@ int main()
 
 	Shader ourShader("resources/shaders/vert/shader.vert", "resources/shaders/frag/shader.frag");
 
+	// float cubeVertices[] = {
+	// 	// positions          //texture
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    //      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    //      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    //      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    //      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    //      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    //     -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    //     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    //     -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    //     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    //      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    //      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //      0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //      0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //      0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    //      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //      0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+    //      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    //      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    //      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    //      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    //     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    // };
+
+	// cube with color and color only
+	float cubeVertices[] = {
+    	// positions          //colors
+    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+
+    	-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+
+    	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+
+     	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+     	 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+     	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+     	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+     	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+     	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+
+    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+     	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+     	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+
+    	-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    	 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+    	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+    	-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f
+	};
+
+
 	float triVertices[] = {
 		// positions       // colors
 	    0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom right
@@ -78,24 +170,28 @@ int main()
 	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	//glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(rectVertices), rectVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rectIndices), rectIndices, GL_STATIC_DRAW);
-	// Location, values, data type, normalized?, stride, offset
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rectIndices), rectIndices, GL_STATIC_DRAW);
+
+	// Commented out are for rendering quads and whatnot
+
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	// glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	// glEnableVertexAttribArray(2);
 	
 	// texture gen
 	unsigned int texture1, texture2;
@@ -142,29 +238,39 @@ int main()
 	}
 	stbi_image_free(data);
 
-	ourShader.use();
-	ourShader.setInt("Textur1", 0);
-	ourShader.setInt("texture2", 1);
-
+	// ourShader.use();
+	// ourShader.setInt("texture1", 0);
+	// ourShader.setInt("texture2", 1);
+    
 	while (!glfwWindowShouldClose(window))
 	{
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
+		// glActiveTexture(GL_TEXTURE0);
+		// glBindTexture(GL_TEXTURE_2D, texture1);
+		// glActiveTexture(GL_TEXTURE1);
+		// glBindTexture(GL_TEXTURE_2D, texture2);
 
-		glm::mat4 transform = glm::mat4(1.0f);
-		//transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-		transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/(float)HEIGHT, 0.1f, 100.f);
 
 		ourShader.use();
-		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-		glad_glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+		unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
+		glad_glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
+		glad_glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		unsigned int projLoc = glGetUniformLocation(ourShader.ID, "projection");
+		glad_glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
