@@ -5,16 +5,29 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
+#include "render/shader.h"
+#include "utils/camera.h"
 
-#include "shader.h"
 #include <stb/stb_image.h>
 
-const unsigned int WIDTH = 800;
-const unsigned int HEIGHT = 600;
+#include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void processInput(GLFWwindow* window);
+
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 int main()
 {
@@ -29,7 +42,7 @@ int main()
 #endif // __APPLE__
 
 	// create window object
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "#", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "#", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -41,6 +54,10 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	// callback function for key input
 	glfwSetKeyCallback(window, key_callback);
+	// callback function for mouse input
+	glfwSetCursorPosCallback(window, mouse_callback);
+	// callback function for scroll input
+	glfwSetScrollCallback(window, scroll_callback);
 
 	// check GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -51,101 +68,101 @@ int main()
 
 	Shader ourShader("resources/shaders/vert/shader.vert", "resources/shaders/frag/shader.frag");
 
+	glEnable(GL_DEPTH_TEST);
 	// float cubeVertices[] = {
 	// 	// positions          //texture
-    //     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-    //      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    //      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	//     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	//      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	//      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	//      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	//     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	//     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    //      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    //     -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	//     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	//      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	//      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	//      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	//     -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	//     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-    //     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //     -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	//     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	//     -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	//     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	//     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	//     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	//     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-    //      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //      0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //      0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //      0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	//      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	//      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	//      0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	//      0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	//      0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	//      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //      0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-    //      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	//     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	//      0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	//      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	//      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	//     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	//     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
-    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    //      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    // };
+	//     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	//      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	//      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	//      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	//     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	//     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	// };
 
 	// cube with color and color only
 	float cubeVertices[] = {
-    	// positions          //colors
-    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		// positions          // color (Indian Red)
+		-0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f,  0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
 
-    	-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f, -0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f, -0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
 
-    	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f,  0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f, -0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
 
-     	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-     	 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-     	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-     	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-     	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-     	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f, -0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
 
-    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-     	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-     	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f, -0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f, -0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f, -0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f, -0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
 
-    	-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    	 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-    	-0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f
+		-0.5f,  0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f, -0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		 0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f,  0.5f,  0.5f,  0.804f, 0.361f, 0.361f,
+		-0.5f,  0.5f, -0.5f,  0.804f, 0.361f, 0.361f
 	};
-
 
 	float triVertices[] = {
 		// positions       // colors
-	    0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom right
+		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom right
 	   -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
 		0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // top
 	};
@@ -192,7 +209,7 @@ int main()
 
 	// glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	// glEnableVertexAttribArray(2);
-	
+
 	// texture gen
 	unsigned int texture1, texture2;
 	glGenTextures(1, &texture1);
@@ -206,7 +223,7 @@ int main()
 	// load image, create texture, and gen mipmaps
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, nChannels;
-	unsigned char *data = stbi_load("resources/textures/container.jpg", &width, &height, &nChannels, 0);
+	unsigned char* data = stbi_load("resources/textures/container.jpg", &width, &height, &nChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -241,11 +258,16 @@ int main()
 	// ourShader.use();
 	// ourShader.setInt("texture1", 0);
 	// ourShader.setInt("texture2", 1);
-    
+
 	while (!glfwWindowShouldClose(window))
 	{
+		float currentFrame = (float) glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		processInput(window);
+
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// glActiveTexture(GL_TEXTURE0);
@@ -253,20 +275,14 @@ int main()
 		// glActiveTexture(GL_TEXTURE1);
 		// glBindTexture(GL_TEXTURE_2D, texture2);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
-		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-		projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/(float)HEIGHT, 0.1f, 100.f);
-
 		ourShader.use();
-		unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
-		glad_glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
-		glad_glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		unsigned int projLoc = glGetUniformLocation(ourShader.ID, "projection");
-		glad_glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+		glm::mat4 model = glm::mat4(1.0f);
+		ourShader.setMat4("model", model);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f);
+		ourShader.setMat4("projection", projection);
+		glm::mat4 view = camera.getViewMatrix();
+		ourShader.setMat4("view", view);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -279,14 +295,15 @@ int main()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
+	ourShader.free();
 
 	glfwTerminate();
 	return 0;
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow* window, int scr_width, int scr_height)
 {
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, scr_width, scr_height);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -299,12 +316,57 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-	else if (key == GLFW_KEY_W && action == GLFW_PRESS)
+	else if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
-	else if (key == GLFW_KEY_E && action == GLFW_PRESS)
+	else if (key == GLFW_KEY_R && action == GLFW_PRESS)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+	}
+}
+
+void processInput(GLFWwindow* window)
+{
+	//float cameraSpeed = 2.5f * deltaTime;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.processKeyboard(FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.processKeyboard(BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.processKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.processKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+		camera.Front = glm::vec3(0.0f, 0.0f, 0.0f);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera.processMouseScroll((float)yoffset);
+}
+
+void mouse_callback(GLFWwindow* window, double xPosIn, double yPosIn)
+{
+	float xPos = (float)xPosIn;
+	float yPos = (float)yPosIn;
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
+	{	
+		//std::cout << camera.Front.x << " " << camera.Front.y << " " << camera.Front.z << std::endl;
+		if (firstMouse)
+		{
+			lastX = xPos;
+			lastY = yPos;
+			firstMouse = false;
+		}
+
+		float xOffset = xPos - lastX;
+		float yOffset = lastY - yPos;
+
+		lastX = xPos;
+		lastY = yPos;
+
+		camera.processMouseMovement(xOffset, yOffset);
 	}
 }
