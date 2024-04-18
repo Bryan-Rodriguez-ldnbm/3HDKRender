@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(myopenglapp)
+project(3HDK)
 
 set(PROJECT_DIR ${CMAKE_SOURCE_DIR})
 set(PROJECT_SOURCE_DIR ${PROJECT_DIR}/src)
