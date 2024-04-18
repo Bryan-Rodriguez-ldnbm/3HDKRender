@@ -10,6 +10,7 @@
 
 class EventCallbacks
 {
+public:
     // Interface to circumvent C style global callbacks
     virtual void frameBuffer_size_callback(GLFWwindow* window, int width, int height) = 0;
 	virtual void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) = 0;
@@ -29,15 +30,17 @@ public:
 
     const GLFWwindow* getWindow();
 
+    void setEventCallbacks(EventCallbacks* callbacks_in);
+
 protected:
     // Allows us to implement singleton OOP design
     static Scene* instance;
 
-    std::unique_ptr<GLFWwindow> window = nullptr;
-    std::unique_ptr<EventCallbacks> eventCallbacks = nullptr;
+    GLFWwindow* window = nullptr;
+    EventCallbacks* callbacks = nullptr;
 
 private:
-    static void resizeCallback(GLFWwindow* window, int width, int height);
+    static void resizeCallback(GLFWwindow* window, int in_width, int in_height);
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 	static void mousePosCallback(GLFWwindow* window, double xPosIn, double yPosIn);
