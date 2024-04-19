@@ -81,7 +81,7 @@ void Scene::shutdown()
     glfwTerminate();
 }
 
-const GLFWwindow* Scene::getWindow()
+GLFWwindow* Scene::getWindow() const 
 {
     return window;
 }

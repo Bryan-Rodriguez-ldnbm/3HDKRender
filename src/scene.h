@@ -28,7 +28,7 @@ public:
     bool init(int const width, int const height);
     void shutdown();
 
-    const GLFWwindow* getWindow();
+    GLFWwindow* getWindow() const;
 
     void setEventCallbacks(EventCallbacks* callbacks_in);
 
