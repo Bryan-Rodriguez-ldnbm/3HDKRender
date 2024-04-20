@@ -1,10 +1,13 @@
 #include <iostream>
 #include <memory>
+#include <string>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "scene.h"
+#include "render/shader.h"
+#include "render/model.h"
 
 class Application : public EventCallbacks
 {
@@ -43,11 +46,22 @@ public:
     {
         scene = std::make_shared<Scene>();
         scene->init(SCR_WIDTH, SCR_HEIGHT);
+
+        point_shader = std::make_shared<Shader>();
+        
+        
     }
+
+    void initGeom()
+    {
+
+    }
+
 
     void shutdown()
     {
         scene->shutdown();
+        // point_shader->free();
     }
 
     void render()
@@ -68,6 +82,11 @@ private:
     int SCR_WIDTH = 1024;
     int SCR_HEIGHT = 720;
 
+    std::string shader_dir = "../res/shaders";
+
+    std::shared_ptr<Shader> point_shader = nullptr;
+
+    std::unique_ptr<Model> model = nullptr;
 };
 
 int main()
