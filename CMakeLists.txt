@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(3HDK)
+project(pointsphere)
 
 set(PROJECT_DIR ${CMAKE_SOURCE_DIR})
 set(PROJECT_SOURCE_DIR ${PROJECT_DIR}/src)
 
+include_directories(${PROJECT_DIR}/ext)
+
 file(GLOB PROJECT_SOURCES "${PROJECT_SOURCE_DIR}/*.cpp" "${PROJECT_SOURCE_DIR}/*.c")
+file(GLOB PROJECT_HEADERS "ext/*/*")
 
 find_package(glfw3 3.2 REQUIRED)
 if(NOT glfw3_FOUND)
