@@ -45,9 +45,10 @@ bool Scene::init(const int width, const int height)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif // __APPLE__
 
-    std::string title = std::to_string(width) + "x" + std::to_string(height);
+    std::string title = std::to_string(width) + "x" + std::to_string(height) + "@";
 
     window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+    
 
     if (!window)
     {   
@@ -58,6 +59,7 @@ bool Scene::init(const int width, const int height)
 
     glfwMakeContextCurrent(window);
 
+    glfwSwapInterval(1);
 
     // Load GLAD
     if (!gladLoadGL())
@@ -65,7 +67,8 @@ bool Scene::init(const int width, const int height)
         std::cerr << "Error: Couldn't load GLAD" << std::endl;
     }
 
-    glfwSwapInterval(1);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     glfwSetFramebufferSizeCallback(window, resizeCallback);
 	glfwSetKeyCallback(window, keyCallback);
@@ -85,7 +88,6 @@ GLFWwindow* Scene::getWindow() const
 {
     return window;
 }
-
 
 void Scene::setEventCallbacks(EventCallbacks* callbacks_in)
 {
