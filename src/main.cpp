@@ -116,9 +116,9 @@ public:
 
         camera = std::make_unique<fps_Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 
-        point_shader = std::make_shared<Shader>();
+        model_shader = std::make_shared<Shader>();
         
-        
+
     }
 
     void initGeom()
@@ -129,7 +129,7 @@ public:
     void shutdown()
     {
         scene->shutdown();
-        point_shader->free();
+        model_shader->free();
     }
 
     void render()
@@ -141,7 +141,6 @@ public:
         glfwPollEvents();
     }
 
-        
 private:
     std::shared_ptr<Scene> scene = nullptr;
 
@@ -154,10 +153,13 @@ private:
 
     std::string shader_dir = "../res/shaders/";
     std::string obj_dir = "../res/objects/";
+    std::string texture_dir = "../res/textures/";
 
-    std::shared_ptr<Shader> point_shader = nullptr;
+    std::shared_ptr<Shader> model_shader = nullptr;
 
     std::unique_ptr<fps_Camera> camera = nullptr;
+
+    std::unique_ptr<Model> backpack = nullptr;
 
     bool first_mouse = true;
 
