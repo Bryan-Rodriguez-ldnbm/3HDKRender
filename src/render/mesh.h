@@ -17,7 +17,9 @@ class Mesh
 {
 public:
 	void init();
+	
 	void Draw(const std::shared_ptr<Shader> prog, std::vector<Texture>& texture);
+	
 	void measure();
 
 	std::vector<float> meshData;

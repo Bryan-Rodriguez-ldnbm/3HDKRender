@@ -19,9 +19,13 @@ class Model
 
 public:
 	void loadModel(const std::string& modelName);
+
 	void init();
+
 	void measure();
+
 	unsigned int loadTexture(const std::string& path);
+
 	// used to iterate through scene graph
 	void draw(const std::shared_ptr<Shader> shader);
 
@@ -30,6 +34,7 @@ public:
 	float scaleX, scaleY, scaleZ;
 	float shiftX, shiftY, shiftZ;
 	float epsilon = 0.001f;
+
 private:
 	std::vector<Mesh> meshes;
     std::vector<Texture> textures_loaded;
@@ -41,6 +46,7 @@ private:
 
 	float minX, minY, minZ;
 	float maxX, maxY, maxZ;
+	
 };
 
 #endif
