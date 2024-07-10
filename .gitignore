@@ -8,3 +8,7 @@ images/
 *.pdf
 *.out
 *.dSYM/
+.vs/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
