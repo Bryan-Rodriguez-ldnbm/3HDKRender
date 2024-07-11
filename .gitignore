@@ -4,6 +4,7 @@ build/
 resources/
 res/
 images/
+src/glad.c
 *.png
 *.pdf
 *.out
