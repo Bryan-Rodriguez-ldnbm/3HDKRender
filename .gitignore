@@ -13,5 +13,5 @@ src/glad.c
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
-3HDKRener_msvc/
+3HDKRender_msvc/
 x64/
