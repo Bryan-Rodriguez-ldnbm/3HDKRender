@@ -45,7 +45,7 @@ bool Scene::init(const int width, const int height)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif // __APPLE__
 
-    std::string title = std::to_string(width) + "x" + std::to_string(height) + "@";
+    std::string title = std::to_string(width) + "x" + std::to_string(height) + " @ ";
 
     window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
     

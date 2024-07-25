@@ -23,7 +23,7 @@ public:
         SCR_WIDTH = width;
         SCR_HEIGHT = height;
 
-        title = std::to_string(SCR_WIDTH) + "x" + std::to_string(SCR_HEIGHT) + "@" + std::to_string(fps);
+        title = std::to_string(SCR_WIDTH) + "x" + std::to_string(SCR_HEIGHT) + " @ " + std::to_string(fps);
 
         glfwSetWindowTitle(window, title.c_str());
 
@@ -72,10 +72,11 @@ public:
     {
         float xPos = (float)xPosIn;
 		float yPos = (float)yPosIn;
+
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
 		{   
             // debug output
-			// std::cout << camera.Front.x << " " << camera.Front.y << " " << camera.Front.z << std::endl;
+            // std::cout << "response";
 			if (first_mouse)
 			{
 				lastX = xPos;
@@ -113,17 +114,22 @@ public:
     {
         scene = std::make_shared<Scene>();
         scene->init(SCR_WIDTH, SCR_HEIGHT);
+        scene->setEventCallbacks(this);
 
         camera = std::make_unique<fps_Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 
         model_shader = std::make_shared<Shader>();
+        model_shader->init(shader_dir + "simple_vert.glsl", shader_dir + "simple_frag.glsl");
         
-
+        this->initGeom();
     }
 
     void initGeom()
     {
-
+        bunny = std::make_unique<Model>();
+        bunny->loadModel("bunny");
+        bunny->init();
+        bunny->measure();
     }
 
     void shutdown()
@@ -134,8 +140,37 @@ public:
 
     void render()
     {
+        float current_frame = (float) glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
+
+        this->process_Input(this->getWindow());
+
         glClearColor(0.529f, 0.808f, 0.922f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        model_shader->use();
+
+        auto projection = std::make_unique<MatrixStack>();
+        auto model = std::make_unique<MatrixStack>();
+
+        projection->pushMatrix();
+        projection->perspective(glm::radians(camera->getZoom()), aspect_ratio, 0.1f, 100.f);
+
+        glm::mat4 view = camera->getViewMatrix();
+        model_shader->setMat4("view", view);
+
+        model_shader->use();
+        model_shader->setMat4("projection", projection->topMatrix());
+        projection->popMatrix();
+
+        model->pushMatrix();
+        model_shader->setMat4("model", model->topMatrix());
+        
+        model_shader->setVec3("mat_amb", glm::vec3(1.0f, 1.0f, 1.0f));
+        bunny->draw(model_shader);
+
+        model->popMatrix();
 
         glfwSwapBuffers(this->getWindow());
         glfwPollEvents();
@@ -151,15 +186,16 @@ private:
 
     float aspect_ratio = (float)SCR_WIDTH / SCR_HEIGHT;
 
-    std::string shader_dir = "../res/shaders/";
-    std::string obj_dir = "../res/objects/";
-    std::string texture_dir = "../res/textures/";
+    std::string shader_dir = "./res/shaders/";
+    std::string obj_dir = "./res/models/";
+    std::string texture_dir = "./res/textures/";
 
     std::shared_ptr<Shader> model_shader = nullptr;
 
     std::unique_ptr<fps_Camera> camera = nullptr;
 
     std::unique_ptr<Model> backpack = nullptr;
+    std::unique_ptr<Model> bunny = nullptr;
 
     bool first_mouse = true;
 
@@ -172,7 +208,7 @@ private:
     float fps = 0.0f, update = 0.0f;
 
     std::string title 
-        = std::to_string(SCR_WIDTH) + "x" + std::to_string(SCR_HEIGHT) + "@" + std::to_string(fps);
+        = std::to_string(SCR_WIDTH) + "x" + std::to_string(SCR_HEIGHT) + " @ " + std::to_string(fps);
 
 };
 
