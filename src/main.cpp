@@ -96,13 +96,13 @@ public:
     void process_Input(GLFWwindow* window)
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            camera->processKeyboard(FORWARD, delta_time);
+            camera->processKeyboard(Camera::FORWARD, delta_time);
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            camera->processKeyboard(BACKWARD, delta_time);
+            camera->processKeyboard(Camera::BACKWARD, delta_time);
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            camera->processKeyboard(LEFT, delta_time);
+            camera->processKeyboard(Camera::LEFT, delta_time);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            camera->processKeyboard(RIGHT, delta_time);
+            camera->processKeyboard(Camera::RIGHT, delta_time);
     }
 
     GLFWwindow* getWindow() const

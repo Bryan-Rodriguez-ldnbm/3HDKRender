@@ -9,17 +9,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
-enum CameraDirection {
-	FORWARD,
-	BACKWARD,
-	LEFT,
-	RIGHT
-};
-
 class Camera 
 {
 public: 
+	enum CameraDirection {
+		FORWARD,
+		BACKWARD,
+		LEFT,
+		RIGHT
+	};
+
 	virtual glm::mat4 getViewMatrix() = 0;
 
 	virtual void processKeyboard(CameraDirection direction, float dTime) = 0;
